@@ -188,6 +188,7 @@ func (self *CommitCommands) ShowCmdObj(sha string, filterPath string, ignoreWhit
 
 	cmdArgs := NewGitCmd("show").
 		Arg("--submodule").
+		Arg("--no-ext-diff").
 		Arg("--color="+self.UserConfig.Git.Paging.ColorArg).
 		Arg(fmt.Sprintf("--unified=%d", contextSize)).
 		Arg("--stat").
