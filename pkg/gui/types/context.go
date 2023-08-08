@@ -124,6 +124,9 @@ type IListContext interface {
 	GetSelectedItemId() string
 
 	GetList() IList
+	GetNonModelItemIndices() []int
+	ViewIndexToModelIndex(int) int
+	ModelIndexToViewIndex(int) int
 
 	FocusLine()
 	IsListContext() // used for type switch

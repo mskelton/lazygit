@@ -88,6 +88,19 @@ func (self *ListController) handleLineChange(change int) error {
 	return nil
 }
 
+func (self *ListController) modelIndexToViewIndex(modelIndex int) int {
+	if self.context.GetNonModelItemIndices() != nil {
+		for _, nonModelItemIndex := range self.context.GetNonModelItemIndices() {
+			if nonModelItemIndex > modelIndex {
+				break
+			}
+			modelIndex++
+		}
+	}
+
+	return modelIndex
+}
+
 func (self *ListController) HandlePrevPage() error {
 	return self.handleLineChange(-self.context.GetViewTrait().PageDelta())
 }
@@ -106,7 +119,7 @@ func (self *ListController) HandleGotoBottom() error {
 
 func (self *ListController) HandleClick(opts gocui.ViewMouseBindingOpts) error {
 	prevSelectedLineIdx := self.context.GetList().GetSelectedLineIdx()
-	newSelectedLineIdx := opts.Y
+	newSelectedLineIdx := self.context.ViewIndexToModelIndex(opts.Y)
 	alreadyFocused := self.isFocused()
 
 	if err := self.pushContextIfNotFocused(); err != nil {
