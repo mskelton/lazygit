@@ -72,6 +72,8 @@ type ThemeConfig struct {
 	MarkedBaseCommitFgColor    []string `yaml:"markedBaseCommitFgColor"`
 	UnstagedChangesColor       []string `yaml:"unstagedChangesColor"`
 	DefaultFgColor             []string `yaml:"defaultFgColor"`
+	MenuSectionHeaderBgColor   []string `yaml:"menuSectionHeaderBgColor"`
+	MenuSectionHeaderFgColor   []string `yaml:"menuSectionHeaderFgColor"`
 }
 
 type CommitLengthConfig struct {
@@ -440,6 +442,8 @@ func GetDefaultConfig() *UserConfig {
 				MarkedBaseCommitFgColor:    []string{"blue"},
 				UnstagedChangesColor:       []string{"red"},
 				DefaultFgColor:             []string{"default"},
+				MenuSectionHeaderBgColor:   []string{"#ccaa00"},
+				MenuSectionHeaderFgColor:   []string{"black"},
 			},
 			CommitLength:              CommitLengthConfig{Show: true},
 			SkipNoStagedFilesWarning:  false,

@@ -1,6 +1,8 @@
 package context
 
 import (
+	"strings"
+
 	"github.com/jesseduffield/lazygit/pkg/gui/keybindings"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -38,6 +40,7 @@ func NewMenuContext(
 			list:                viewModel,
 			c:                   c,
 			getColumnAlignments: func() []utils.Alignment { return viewModel.columnAlignment },
+			getNonModelItems:    viewModel.GetNonModelItems,
 		},
 	}
 }
@@ -109,6 +112,38 @@ func (self *MenuViewModel) GetDisplayStrings(_startIdx int, _length int) [][]str
 		displayStrings = utils.Prepend(displayStrings, keyStyle.Sprint(keyLabel))
 		return displayStrings
 	})
+}
+
+func (self *MenuViewModel) GetNonModelItems(columnPositions []int) []NonModelItem {
+	// Don't display section headers when we are filtering. The reason is that
+	// filtering changes the order of the items (they are sorted by best match),
+	// so all the sections would be messed up.
+	if self.FilteredListViewModel.IsFiltering() {
+		return []NonModelItem{}
+	}
+
+	result := []NonModelItem{}
+	menuItems := self.FilteredListViewModel.GetItems()
+	var prevSection *types.MenuSection = nil
+	for i, menuItem := range menuItems {
+		if menuItem.Section != nil && menuItem.Section != prevSection {
+			if prevSection != nil {
+				result = append(result, NonModelItem{
+					Index: i,
+					Text:  "",
+				})
+			}
+
+			padding := strings.Repeat(" ", columnPositions[menuItem.Section.Column])
+			result = append(result, NonModelItem{
+				Index: i,
+				Text:  padding + style.FgGreen.SetBold().Sprintf("--- %s ---", menuItem.Section.Title),
+			})
+			prevSection = menuItem.Section
+		}
+	}
+
+	return result
 }
 
 func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
