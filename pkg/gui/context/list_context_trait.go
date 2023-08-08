@@ -2,6 +2,7 @@ package context
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
 	"github.com/jesseduffield/lazygit/pkg/utils"
@@ -51,9 +52,10 @@ func (self *ListContextTrait) renderLines(startIdx int, length int) string {
 	if self.getColumnAlignments != nil {
 		columnAlignments = self.getColumnAlignments()
 	}
-	return utils.RenderDisplayStrings(
+	lines := utils.RenderDisplayStrings(
 		self.getDisplayStrings(startIdx, length),
 		columnAlignments)
+	return strings.Join(lines, "\n")
 }
 
 func (self *ListContextTrait) refreshViewport() {
