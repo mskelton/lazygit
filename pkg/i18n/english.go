@@ -387,6 +387,9 @@ type TranslationSet struct {
 	Panel                               string
 	Keybindings                         string
 	KeybindingsLegend                   string
+	KeybindingsMenuSectionLocal         string
+	KeybindingsMenuSectionGlobal        string
+	KeybindingsMenuSectionNavigation    string
 	RenameBranch                        string
 	SetUnsetUpstream                    string
 	NewGitFlowBranchPrompt              string
@@ -984,6 +987,9 @@ func EnglishTranslationSet() TranslationSet {
 		ConflictsResolved:                   "All merge conflicts resolved. Continue?",
 		Continue:                            "Continue",
 		Keybindings:                         "Keybindings",
+		KeybindingsMenuSectionLocal:         "Local",
+		KeybindingsMenuSectionGlobal:        "Global",
+		KeybindingsMenuSectionNavigation:    "Navigation",
 		RebasingTitle:                       "Rebase '{{.checkedOutBranch}}' onto '{{.ref}}'",
 		RebasingFromBaseCommitTitle:         "Rebase '{{.checkedOutBranch}}' from marked base onto '{{.ref}}'",
 		SimpleRebase:                        "Simple rebase",
