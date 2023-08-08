@@ -1,6 +1,8 @@
 package context
 
 import (
+	"strings"
+
 	"github.com/jesseduffield/lazygit/pkg/gui/keybindings"
 	"github.com/jesseduffield/lazygit/pkg/gui/style"
 	"github.com/jesseduffield/lazygit/pkg/gui/types"
@@ -38,6 +40,8 @@ func NewMenuContext(
 				list:                viewModel,
 				getDisplayStrings:   viewModel.GetDisplayStrings,
 				getColumnAlignments: func() []utils.Alignment { return viewModel.columnAlignment },
+				getNonModelItems:    viewModel.GetNonModelItems,
+				renderNonModelItem:  viewModel.RenderNonModelItem,
 			},
 			c: c,
 		},
@@ -111,6 +115,56 @@ func (self *MenuViewModel) GetDisplayStrings(_ int, _ int) [][]string {
 		displayStrings = utils.Prepend(displayStrings, keyStyle.Sprint(keyLabel))
 		return displayStrings
 	})
+}
+
+type MenuSectionRenderInfo struct {
+	text   string
+	column int
+}
+
+func (self *MenuViewModel) GetNonModelItems() []*NonModelItem {
+	// Don't display section headers when we are filtering. The reason is that
+	// filtering changes the order of the items (they are sorted by best match),
+	// so all the sections would be messed up.
+	if self.FilteredListViewModel.IsFiltering() {
+		return []*NonModelItem{}
+	}
+
+	result := []*NonModelItem{}
+	menuItems := self.FilteredListViewModel.GetItems()
+	var prevSection *types.MenuSection = nil
+	for i, menuItem := range menuItems {
+		if menuItem.Section != nil && menuItem.Section != prevSection {
+			if prevSection != nil {
+				result = append(result, &NonModelItem{
+					Index:      i,
+					ClientData: MenuSectionRenderInfo{},
+				})
+			}
+
+			result = append(result, &NonModelItem{
+				Index: i,
+				ClientData: MenuSectionRenderInfo{
+					text:   menuItem.Section.Title,
+					column: menuItem.Section.Column,
+				},
+			})
+			prevSection = menuItem.Section
+		}
+	}
+
+	return result
+}
+
+func (self *MenuViewModel) RenderNonModelItem(item *NonModelItem, columnPositions []int) string {
+	renderInfo := item.ClientData.(MenuSectionRenderInfo)
+
+	if renderInfo.text == "" {
+		return ""
+	}
+
+	padding := strings.Repeat(" ", columnPositions[renderInfo.column])
+	return padding + style.FgGreen.SetBold().Sprintf("--- %s ---", renderInfo.text)
 }
 
 func (self *MenuContext) GetKeybindings(opts types.KeybindingsOpts) []*types.Binding {
