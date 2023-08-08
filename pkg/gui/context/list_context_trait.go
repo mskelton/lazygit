@@ -46,10 +46,19 @@ func (self *ListContextTrait) FocusLine() {
 	}
 }
 
+func (self *ListContextTrait) renderLines(startIdx int, length int) string {
+	var columnAlignments []utils.Alignment
+	if self.getColumnAlignments != nil {
+		columnAlignments = self.getColumnAlignments()
+	}
+	return utils.RenderDisplayStrings(
+		self.getDisplayStrings(startIdx, length),
+		columnAlignments)
+}
+
 func (self *ListContextTrait) refreshViewport() {
 	startIdx, length := self.GetViewTrait().ViewPortYBounds()
-	displayStrings := self.getDisplayStrings(startIdx, length)
-	content := utils.RenderDisplayStrings(displayStrings, nil)
+	content := self.renderLines(startIdx, length)
 	self.GetViewTrait().SetViewPortContent(content)
 }
 
@@ -82,14 +91,7 @@ func (self *ListContextTrait) HandleFocusLost(opts types.OnFocusLostOpts) error 
 // OnFocus assumes that the content of the context has already been rendered to the view. OnRender is the function which actually renders the content to the view
 func (self *ListContextTrait) HandleRender() error {
 	self.list.RefreshSelectedIdx()
-	var columnAlignments []utils.Alignment
-	if self.getColumnAlignments != nil {
-		columnAlignments = self.getColumnAlignments()
-	}
-	content := utils.RenderDisplayStrings(
-		self.getDisplayStrings(0, self.list.Len()),
-		columnAlignments,
-	)
+	content := self.renderLines(0, self.list.Len())
 	self.GetViewTrait().SetContent(content)
 	self.c.Render()
 	self.setFooter()
