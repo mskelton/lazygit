@@ -83,9 +83,11 @@ func (self *ListController) handleLineChange(change int) error {
 	// we're not constantly re-rendering the main view.
 	if before != after {
 		if change == -1 {
-			checkScrollUp(self.context.GetViewTrait(), self.c.UserConfig.Gui.ScrollOffMargin, before, after)
+			checkScrollUp(self.context.GetViewTrait(), self.c.UserConfig.Gui.ScrollOffMargin,
+				self.modelIndexToViewIndex(before), self.modelIndexToViewIndex(after))
 		} else if change == 1 {
-			checkScrollDown(self.context.GetViewTrait(), self.c.UserConfig.Gui.ScrollOffMargin, before, after)
+			checkScrollDown(self.context.GetViewTrait(), self.c.UserConfig.Gui.ScrollOffMargin,
+				self.modelIndexToViewIndex(before), self.modelIndexToViewIndex(after))
 		}
 
 		return self.context.HandleFocus(types.OnFocusOpts{})
